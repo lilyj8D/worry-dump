@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worry Dump & Release</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #fffdf7 0%, #fff9e6 40%, #fff3cd 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; overflow: hidden;
+        }
+        .container { max-width: 440px; width: 100%; text-align: center; }
+        header { color: #5a4a28; margin-bottom: 28px; }
+        header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+        header p { color: #8a7a55; font-size: 0.95rem; line-height: 1.5; }
+        .write-area { position: relative; margin-bottom: 20px; }
+        textarea {
+            width: 100%; height: 200px; padding: 20px;
+            border: 3px solid #f0e6c8; border-radius: 20px;
+            background: white; color: #4a3f2a; font-size: 1rem;
+            line-height: 1.6; resize: none; font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 4px 20px rgba(200, 180, 100, 0.1); transition: border-color 0.3s;
+        }
+        textarea:focus { outline: none; border-color: #e6c84d; }
+        textarea::placeholder { color: #c4b078; }
+        textarea.releasing-burn { animation: burnAway 4s ease-in forwards; }
+        textarea.releasing-float { animation: floatAway 5s ease-out forwards; }
+        textarea.releasing-crumple { animation: crumpleAway 3.5s cubic-bezier(.6,-0.28,.74,.05) forwards; }
+        textarea.releasing-shoot { animation: crumpleToball 1.5s ease-in forwards; }
+        @keyframes burnAway {
+            0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
+            10% { transform: scale(1.06) rotate(-1deg); }
+            20% { filter: brightness(1.2) sepia(0.4); transform: scale(1.08) rotate(1.5deg); }
+            35% { filter: brightness(1.4) sepia(0.7) saturate(2); transform: scale(1.04) rotate(-2deg); border-color: #ffb347; }
+            50% { filter: brightness(1.6) sepia(0.9) saturate(3); transform: scale(0.95) rotate(2.5deg); opacity: 0.75; }
+            65% { filter: brightness(2) sepia(1) saturate(4); transform: scale(0.75) rotate(-3deg); opacity: 0.5; }
+            80% { filter: brightness(2.5) sepia(1) saturate(5); transform: scale(0.5) rotate(5deg); opacity: 0.25; }
+            100% { filter: brightness(3) sepia(1) saturate(6); transform: scale(0.1) rotate(8deg); opacity: 0; }
+        }
+        @keyframes floatAway {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            10% { transform: translateY(10px) scale(1.04) rotate(0deg); }
+            20% { transform: translateY(-20px) scale(1.02) rotate(2deg); opacity: 0.95; }
+            35% { transform: translateY(-70px) scale(0.95) rotate(-3deg); opacity: 0.8; }
+            50% { transform: translateY(-140px) scale(0.85) rotate(4deg); opacity: 0.6; }
+            70% { transform: translateY(-250px) scale(0.65) rotate(-5deg); opacity: 0.35; }
+            85% { transform: translateY(-350px) scale(0.45) rotate(6deg); opacity: 0.15; }
+            100% { transform: translateY(-500px) scale(0.2) rotate(8deg); opacity: 0; }
+        }
+        @keyframes crumpleAway {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; border-radius: 20px; }
+            15% { transform: scale(1.1) rotate(-2deg); border-radius: 20px; }
+            30% { transform: scale(0.8) rotate(6deg); border-radius: 30px; }
+            45% { transform: scale(0.9) rotate(-8deg); border-radius: 40%; opacity: 0.8; }
+            60% { transform: scale(0.5) rotate(12deg); border-radius: 45%; opacity: 0.6; }
+            75% { transform: scale(0.3) rotate(-15deg); border-radius: 50%; opacity: 0.35; }
+            90% { transform: scale(0.15) rotate(20deg); border-radius: 50%; opacity: 0.1; }
+            100% { transform: scale(0) rotate(25deg); opacity: 0; border-radius: 50%; }
+        }
+        @keyframes crumpleToball {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; border-radius: 20px; }
+            40% { transform: scale(0.6) rotate(10deg); border-radius: 40%; }
+            70% { transform: scale(0.3) rotate(-5deg); border-radius: 50%; opacity: 0.8; }
+            100% { transform: scale(0) rotate(0deg); border-radius: 50%; opacity: 0; }
+        }
+        .controls { display: flex; flex-direction: column; gap: 12px; }
+        .release-options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .release-btn {
+            padding: 12px 20px; border: 3px solid #f0e6c8; border-radius: 30px;
+            background: white; color: #5a4a28; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 3px 10px rgba(200, 180, 100, 0.1);
+        }
+        .release-btn:hover { background: #fff9e6; border-color: #e6c84d; transform: translateY(-3px) scale(1.08); box-shadow: 0 8px 25px rgba(200, 180, 100, 0.25); }
+        .release-btn:active { transform: scale(0.92); }
+        .release-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+        .sfx-text { position: fixed; font-size: 2rem; font-weight: 800; pointer-events: none; z-index: 20; animation: sfxPop 1.5s ease-out forwards; text-shadow: 2px 2px 0 rgba(0,0,0,0.05); }
+        @keyframes sfxPop {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            20% { transform: scale(1.4) rotate(5deg); opacity: 1; }
+            40% { transform: scale(1) rotate(-3deg); opacity: 1; }
+            100% { transform: scale(0.8) translateY(-40px) rotate(5deg); opacity: 0; }
+        }
+        .confirmation {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(160deg, #fffdf7 0%, #fff9e6 40%, #fff3cd 100%);
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            opacity: 0; pointer-events: none; transition: opacity 0.8s; z-index: 10;
+        }
+        .confirmation.show { opacity: 1; pointer-events: auto; }
+        .confirmation .emoji { font-size: 5rem; margin-bottom: 12px; animation: celebrateBounce 1s ease-out; }
+        .confirmation .message { color: #5a4a28; font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; animation: slideUp 0.6s ease-out 0.3s both; }
+        .confirmation .sub-message { color: #8a7a55; font-size: 0.95rem; margin-bottom: 32px; max-width: 300px; line-height: 1.5; animation: slideUp 0.6s ease-out 0.5s both; }
+        .confirmation .again-btn {
+            padding: 14px 32px; border: 3px solid #f0e6c8; border-radius: 30px;
+            background: white; color: #5a4a28; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 3px 10px rgba(200, 180, 100, 0.1); animation: slideUp 0.6s ease-out 0.7s both;
+        }
+        .confirmation .again-btn:hover { background: #fff9e6; border-color: #e6c84d; transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 20px rgba(200, 180, 100, 0.2); }
+        @keyframes celebrateBounce {
+            0% { transform: scale(0) rotate(-20deg); } 40% { transform: scale(1.3) rotate(10deg); }
+            60% { transform: scale(0.9) rotate(-5deg); } 80% { transform: scale(1.1) rotate(3deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .particle { position: fixed; pointer-events: none; font-size: 1.8rem; z-index: 15; animation: particleFloat 3.5s ease-out forwards; }
+        .particle.spin { animation: particleSpin 3s ease-out forwards; }
+        .particle.zigzag { animation: particleZigzag 3.5s ease-out forwards; }
+        @keyframes particleFloat {
+            0% { transform: translateY(0) rotate(0deg) scale(0); opacity: 1; }
+            15% { transform: translateY(-20px) rotate(30deg) scale(1.3); opacity: 1; }
+            100% { transform: translateY(-400px) rotate(360deg) scale(0.4); opacity: 0; }
+        }
+        @keyframes particleSpin {
+            0% { transform: translateY(0) rotate(0deg) scale(0); opacity: 1; }
+            20% { transform: translateY(-30px) rotate(180deg) scale(1.4); opacity: 1; }
+            100% { transform: translateY(-350px) rotate(720deg) scale(0.3); opacity: 0; }
+        }
+        @keyframes particleZigzag {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            15% { transform: translate(20px, -40px) scale(1.2); opacity: 1; }
+            35% { transform: translate(-25px, -100px) scale(1); opacity: 0.9; }
+            55% { transform: translate(30px, -180px) scale(0.8); opacity: 0.7; }
+            75% { transform: translate(-20px, -260px) scale(0.6); opacity: 0.4; }
+            100% { transform: translate(15px, -380px) scale(0.3); opacity: 0; }
+        }
+        .countdown-toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: white; border: 3px solid #f0e6c8; border-radius: 20px;
+            padding: 10px 24px; font-weight: 700; color: #5a4a28; font-size: 0.9rem;
+            z-index: 25; opacity: 0; transition: opacity 0.3s; font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 4px 15px rgba(200, 180, 100, 0.15);
+        }
+        .countdown-toast.show { opacity: 1; }
+        .char-count { text-align: right; color: #c4b078; font-size: 0.75rem; margin-top: 6px; font-weight: 600; }
+        .hint { color: #8a7a55; font-size: 0.85rem; margin-bottom: 14px; font-weight: 600; }
+        /* ===== SHOOT GAME STYLES ===== */
+        .game-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(160deg, #fffdf7 0%, #fff9e6 40%, #fff3cd 100%);
+            z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .game-overlay.show { display: flex; }
+        .game-header { position: absolute; top: 20px; left: 0; right: 0; text-align: center; color: #5a4a28; }
+        .game-header h2 { font-size: 1.2rem; font-weight: 800; }
+        .game-header p { font-size: 0.8rem; color: #8a7a55; margin-top: 4px; }
+        .game-canvas-wrap { position: relative; width: 100%; max-width: 400px; height: 500px; touch-action: none; }
+        canvas#gameCanvas { width: 100%; height: 100%; border-radius: 20px; }
+        .game-message {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 2.5rem; font-weight: 800; pointer-events: none;
+            opacity: 0; transition: opacity 0.3s; text-align: center; color: #5a4a28;
+        }
+        .game-message.show { opacity: 1; animation: sfxPop 1s ease-out forwards; }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainView">
+        <header>
+            <h1>💭 Worry Dump</h1>
+            <p>Write down what's on your mind.<br>Then let it go — dramatically.</p>
+        </header>
+        <div class="write-area">
+            <textarea id="worryText" placeholder="What's weighing on you? Type it all out here. No one will ever see this..." aria-label="Write your worries here"></textarea>
+            <div class="char-count" id="charCount"></div>
+        </div>
+        <p class="hint">Choose your weapon of release:</p>
+        <div class="controls">
+            <div class="release-options">
+                <button class="release-btn" onclick="release('burn')">🔥 Burn it</button>
+                <button class="release-btn" onclick="release('float')">🎈 Yeet it</button>
+                <button class="release-btn" onclick="release('shoot')">⚽ Shoot it</button>
+            </div>
+        </div>
+    </div>
+    <div class="confirmation" id="confirmation">
+        <div class="emoji" id="confirmEmoji">🕊️</div>
+        <div class="message" id="confirmMessage">Released.</div>
+        <div class="sub-message" id="confirmSub">Those words are gone.</div>
+        <button class="again-btn" onclick="reset()">🔄 Got more worries?</button>
+    </div>
+    <div class="countdown-toast" id="countdownToast"></div>
+    <!-- Shoot Game Overlay -->
+    <div class="game-overlay" id="gameOverlay">
+        <div class="game-header">
+            <h2>⚽ Kick your worry into the goal!</h2>
+            <p>Drag the ball and flick it — you get 5 tries!</p>
+        </div>
+        <div class="game-canvas-wrap">
+            <canvas id="gameCanvas"></canvas>
+            <div class="game-message" id="gameMessage"></div>
+        </div>
+    </div>
+    <script>
+    var textarea = document.getElementById('worryText');
+    var charCount = document.getElementById('charCount');
+    var mainView = document.getElementById('mainView');
+    var confirmation = document.getElementById('confirmation');
+    var buttons = document.querySelectorAll('.release-btn');
+    var countdownToast = document.getElementById('countdownToast');
+
+    var confirmMessages = [
+        { emoji: '🎤', message: 'Mic drop.', sub: "Your worry just got absolutely roasted. It's gone." },
+        { emoji: '🚀', message: 'Launched into space!', sub: "Your worry is now orbiting Jupiter. Not your problem anymore." },
+        { emoji: '🧹', message: 'Swept. Mopped. Sparkling.', sub: "Your brain is now cleaner than your kitchen." },
+        { emoji: '👋', message: 'Bye Felicia!', sub: "That thought didn't even deserve a goodbye party." },
+        { emoji: '🌻', message: "Gone like yesterday's leftovers!", sub: "Made room for better thoughts. Maybe pizza thoughts." },
+        { emoji: '🎬', message: 'And... CUT!', sub: "That scene has been deleted from the movie of your day." },
+        { emoji: '🗑️', message: 'YEET!', sub: "That worry is now in another dimension. Probably confused." },
+        { emoji: '🧠', message: 'Brain: decluttered.', sub: "Marie Kondo would be so proud of you right now." }
+    ];
+
+    var shootMessages = {
+        score: [
+            { emoji: '⚽', message: 'GOOOAAAAL!', sub: "The crowd goes wild! That worry hit the back of the net." },
+            { emoji: '🥅', message: 'TOP BINS!', sub: "World class finish. Your worry didn't stand a chance." },
+            { emoji: '🏆', message: 'WHAT A STRIKE!', sub: "That worry has been officially relegated." }
+        ],
+        miss: [
+            { emoji: '😅', message: 'Saved by the keeper!', sub: "5 shots and the goalie wins. But your worry is still gone!" },
+            { emoji: '🤷', message: 'Hit the post!', sub: "The ball's off the pitch. So is your worry. That's the real win." },
+            { emoji: '😂', message: 'Wide! VAR can\'t save that.', sub: "Even Messi misses penalties. Your worry is still evicted though." }
+        ]
+    };
+    var sfxWords = {
+        burn: ['SIZZLE!', 'WHOOSH!', 'CRISPY!', 'TOASTED!', 'ROASTED!'],
+        float: ['YEET!', 'BYE!', 'WHEEE!', 'BLOOP!', 'ADIOS!'],
+        crumple: ['SCRUNCH!', 'BONK!', 'SQUISH!', 'CRINKLE!', 'SMOOSH!']
+    };
+    var sfxColors = {
+        burn: ['#ff6b35', '#ffa500', '#e6c84d'],
+        float: ['#667eea', '#a8dadc', '#e6c84d'],
+        crumple: ['#8a7a55', '#c4b078', '#e6c84d']
+    };
+
+    textarea.addEventListener('input', function() {
+        var len = textarea.value.length;
+        charCount.textContent = len > 0 ? len + ' characters of pure worry juice' : '';
+    });
+
+    function showSfxText(type) {
+        var words = sfxWords[type]; var colors = sfxColors[type];
+        for (var i = 0; i < 3; i++) {
+            (function(index) {
+                setTimeout(function() {
+                    var el = document.createElement('div');
+                    el.className = 'sfx-text';
+                    el.textContent = words[Math.floor(Math.random() * words.length)];
+                    el.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.left = (20 + Math.random() * 60) + '%';
+                    el.style.top = (20 + Math.random() * 40) + '%';
+                    document.body.appendChild(el);
+                    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 2000);
+                }, index * 800);
+            })(i);
+        }
+    }
+
+    function showCountdown(type) {
+        var messages;
+        if (type === 'burn') messages = ['Lighting the match... 🔥', 'Getting toasty... 🥵', 'Almost ash... 💨', ''];
+        else if (type === 'float') messages = ['Inflating balloon... 🎈', 'Letting go... 🫳', "It's flying away! 👀", ''];
+        else messages = ['Grabbing the paper... ✊', 'SCRUNCHING... 😤', 'Tossing it! 🏀', ''];
+        messages.forEach(function(msg, i) {
+            setTimeout(function() {
+                if (msg) { countdownToast.textContent = msg; countdownToast.classList.add('show'); }
+                else { countdownToast.classList.remove('show'); }
+            }, i * 1200);
+        });
+    }
+    function release(type) {
+        if (!textarea.value.trim()) {
+            textarea.setAttribute('placeholder', 'Come on, write something! Even "ugh" counts...');
+            textarea.focus(); return;
+        }
+        if (type === 'shoot') {
+            buttons.forEach(function(btn) { btn.disabled = true; });
+            textarea.classList.add('releasing-shoot');
+            setTimeout(function() { mainView.style.display = 'none'; startShootGame(); }, 1500);
+            return;
+        }
+        buttons.forEach(function(btn) { btn.disabled = true; });
+        showSfxText(type); showCountdown(type); spawnParticles(type);
+        textarea.classList.add('releasing-' + type);
+        var delay = type === 'float' ? 4800 : type === 'burn' ? 3800 : 3500;
+        setTimeout(function() {
+            var msg = confirmMessages[Math.floor(Math.random() * confirmMessages.length)];
+            document.getElementById('confirmEmoji').textContent = msg.emoji;
+            document.getElementById('confirmMessage').textContent = msg.message;
+            document.getElementById('confirmSub').textContent = msg.sub;
+            mainView.style.display = 'none';
+            confirmation.classList.add('show');
+            spawnCelebration();
+        }, delay);
+    }
+
+    function spawnParticles(type) {
+        var emojis;
+        if (type === 'burn') emojis = ['🔥', '✨', '💨', '🌟', '💛', '🥵', '♨️'];
+        else if (type === 'float') emojis = ['🎈', '☁️', '🫧', '💭', '🪽', '🦋', '🌈'];
+        else emojis = ['📄', '💨', '✨', '🗑️', '💫', '🏀', '📝'];
+        var animations = ['', 'spin', 'zigzag'];
+        var rect = textarea.getBoundingClientRect();
+        for (var i = 0; i < 18; i++) {
+            (function(index) {
+                setTimeout(function() {
+                    var particle = document.createElement('div');
+                    var ac = animations[Math.floor(Math.random() * animations.length)];
+                    particle.className = 'particle' + (ac ? ' ' + ac : '');
+                    particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    particle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                    particle.style.top = (rect.top + Math.random() * rect.height) + 'px';
+                    particle.style.animationDuration = (3 + Math.random() * 1.5) + 's';
+                    document.body.appendChild(particle);
+                    setTimeout(function() { if (particle.parentNode) particle.parentNode.removeChild(particle); }, 5000);
+                }, index * 150);
+            })(i);
+        }
+    }
+
+    function spawnCelebration() {
+        var emojis = ['🎉', '🥳', '✨', '💛', '⭐', '🌟', '🎊'];
+        for (var i = 0; i < 12; i++) {
+            (function(index) {
+                setTimeout(function() {
+                    var p = document.createElement('div'); p.className = 'particle';
+                    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    p.style.left = (10 + Math.random() * 80) + '%';
+                    p.style.top = (50 + Math.random() * 30) + '%';
+                    p.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+                    document.body.appendChild(p);
+                    setTimeout(function() { if (p.parentNode) p.parentNode.removeChild(p); }, 5000);
+                }, index * 120);
+            })(i);
+        }
+    }
+
+    function reset() {
+        textarea.value = '';
+        textarea.classList.remove('releasing-burn', 'releasing-float', 'releasing-crumple', 'releasing-shoot');
+        charCount.textContent = '';
+        buttons.forEach(function(btn) { btn.disabled = false; });
+        countdownToast.classList.remove('show');
+        confirmation.classList.remove('show');
+        mainView.style.display = '';
+        document.getElementById('gameOverlay').classList.remove('show');
+        setTimeout(function() { textarea.focus(); }, 300);
+    }
+    // ===== SHOOT GAME WITH 5 TRIES =====
+    function startShootGame() {
+        var overlay = document.getElementById('gameOverlay');
+        var canvas = document.getElementById('gameCanvas');
+        var gameMsg = document.getElementById('gameMessage');
+        overlay.classList.add('show');
+
+        var ctx = canvas.getContext('2d');
+        var W, H, dpr;
+        function resizeCanvas() {
+            dpr = window.devicePixelRatio || 1;
+            var rect = canvas.getBoundingClientRect();
+            W = rect.width; H = rect.height;
+            canvas.width = W * dpr; canvas.height = H * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        resizeCanvas();
+
+        var MAX_TRIES = 5;
+        var triesLeft = MAX_TRIES;
+        var gameOver = false;
+        var resetting = false;
+
+        var missReactions = ['😂 Wide!', '🫠 Saved!', '💨 Off target!', '🙈 Hit the post!', '😅 One more!'];
+
+        var ball = { x: W/2, y: H*0.68, radius: 22, vx: 0, vy: 0, rotation: 0, launched: false, landed: false };
+        var bin = { x: W/2 + (Math.random()-0.5)*100, y: 120, width: 70, height: 55 };
+        var gravity = 0.35;
+        var dragging = false;
+        var dragStart = {x:0,y:0}, dragCurrent = {x:0,y:0};
+        var trail = [];
+        var animFrame = null;
+        function resetBall() {
+            ball.x = W/2; ball.y = H*0.68;
+            ball.vx = 0; ball.vy = 0; ball.rotation = 0;
+            ball.launched = false; ball.landed = false;
+            trail = [];
+            resetting = false;
+        }
+
+        function getPos(e) {
+            var rect = canvas.getBoundingClientRect();
+            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - rect.left, y: cy - rect.top };
+        }
+
+        function onStart(e) {
+            if (ball.launched || resetting || gameOver) return;
+            var pos = getPos(e);
+            var dx = pos.x - ball.x, dy = pos.y - ball.y;
+            if (Math.sqrt(dx*dx + dy*dy) < ball.radius + 20) {
+                dragging = true; dragStart = pos; dragCurrent = pos;
+            }
+            e.preventDefault();
+        }
+        function onMove(e) { if (!dragging) return; dragCurrent = getPos(e); e.preventDefault(); }
+        function onEnd(e) {
+            if (!dragging) return;
+            dragging = false;
+            var dx = dragStart.x - dragCurrent.x, dy = dragStart.y - dragCurrent.y;
+            var power = Math.sqrt(dx*dx + dy*dy);
+            if (power > 15) {
+                ball.vx = dx * 0.12; ball.vy = dy * 0.12;
+                var maxV = 18, speed = Math.sqrt(ball.vx*ball.vx + ball.vy*ball.vy);
+                if (speed > maxV) { ball.vx = (ball.vx/speed)*maxV; ball.vy = (ball.vy/speed)*maxV; }
+                ball.launched = true;
+                triesLeft--;
+            }
+            e.preventDefault();
+        }
+
+        canvas.addEventListener('mousedown', onStart);
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('touchstart', onStart, {passive:false});
+        canvas.addEventListener('touchmove', onMove, {passive:false});
+        canvas.addEventListener('touchend', onEnd, {passive:false});
+        function endGame(didScore) {
+            gameOver = true;
+            var msgs = didScore ? shootMessages.score : shootMessages.miss;
+            var msg = msgs[Math.floor(Math.random() * msgs.length)];
+            setTimeout(function() {
+                overlay.classList.remove('show');
+                document.getElementById('confirmEmoji').textContent = msg.emoji;
+                document.getElementById('confirmMessage').textContent = msg.message;
+                document.getElementById('confirmSub').textContent = msg.sub;
+                confirmation.classList.add('show');
+                spawnCelebration();
+                cleanup();
+            }, 1500);
+        }
+
+        function cleanup() {
+            canvas.removeEventListener('mousedown', onStart);
+            canvas.removeEventListener('mousemove', onMove);
+            canvas.removeEventListener('mouseup', onEnd);
+            canvas.removeEventListener('touchstart', onStart);
+            canvas.removeEventListener('touchmove', onMove);
+            canvas.removeEventListener('touchend', onEnd);
+            if (animFrame) cancelAnimationFrame(animFrame);
+        }
+
+        function checkScore() {
+            var dx = ball.x - bin.x, dy = ball.y - bin.y;
+            return Math.abs(dx) < bin.width/2 - 5 && dy > -10 && dy < bin.height - 10;
+        }
+        function drawBin() {
+            var bx=bin.x, by=bin.y, bw=bin.width, bh=bin.height;
+            // Goal net background
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.fillRect(bx-bw/2, by, bw, bh);
+            // Net pattern
+            ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+            for (var i = bx-bw/2; i <= bx+bw/2; i += 10) {
+                ctx.beginPath(); ctx.moveTo(i, by); ctx.lineTo(i, by+bh); ctx.stroke();
+            }
+            for (var j = by; j <= by+bh; j += 10) {
+                ctx.beginPath(); ctx.moveTo(bx-bw/2, j); ctx.lineTo(bx+bw/2, j); ctx.stroke();
+            }
+            // Goal frame - posts and crossbar
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(bx-bw/2, by+bh); ctx.lineTo(bx-bw/2, by);
+            ctx.lineTo(bx+bw/2, by); ctx.lineTo(bx+bw/2, by+bh);
+            ctx.stroke();
+            // Label
+            ctx.fillStyle = '#5a4a28'; ctx.font = '700 12px Quicksand'; ctx.textAlign = 'center';
+            ctx.fillText('⚽ GOAL', bx, by + bh + 18);
+        }
+
+        function drawBall() {
+            ctx.save(); ctx.translate(ball.x, ball.y);
+            ctx.font = (ball.radius * 2) + 'px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('⚽', 0, 2);
+            ctx.restore();
+        }
+
+        function drawTrail() {
+            for (var i = 0; i < trail.length; i++) {
+                var t = trail[i], alpha = t.life / 30;
+                ctx.globalAlpha = alpha * 0.4; ctx.fillStyle = '#e6c84d';
+                ctx.beginPath(); ctx.arc(t.x, t.y, 4*alpha, 0, Math.PI*2); ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        function drawAimLine() {
+            if (!dragging) return;
+            var dx = dragStart.x - dragCurrent.x, dy = dragStart.y - dragCurrent.y;
+            ctx.strokeStyle = 'rgba(230, 200, 77, 0.5)'; ctx.lineWidth = 3;
+            ctx.setLineDash([8,8]);
+            ctx.beginPath(); ctx.moveTo(ball.x, ball.y); ctx.lineTo(ball.x+dx*0.8, ball.y+dy*0.8); ctx.stroke();
+            ctx.setLineDash([]);
+            var power = Math.min(Math.sqrt(dx*dx+dy*dy)/150, 1);
+            ctx.fillStyle = power>0.7 ? '#ff6b35' : power>0.4 ? '#e6c84d' : '#8a7a55';
+            ctx.font = '700 14px Quicksand'; ctx.textAlign = 'center';
+            var label = power>0.7 ? 'FULL SEND!' : power>0.4 ? 'Nice power' : 'Flick harder!';
+            ctx.fillText(label, ball.x, ball.y + ball.radius + 25);
+        }
+        function drawUI() {
+            // Tries remaining - draw as footballs
+            ctx.textAlign = 'left'; ctx.font = '700 13px Quicksand'; ctx.fillStyle = '#5a4a28';
+            ctx.fillText('Shots: ', 12, 25);
+            for (var i = 0; i < MAX_TRIES; i++) {
+                var emoji = i < triesLeft ? '⚽' : '❌';
+                ctx.font = '16px sans-serif';
+                ctx.fillText(emoji, 62 + i * 24, 27);
+            }
+        }
+
+        function update() {
+            if (gameOver) return;
+            if (ball.launched && !ball.landed) {
+                ball.vy += gravity;
+                ball.x += ball.vx; ball.y += ball.vy;
+                ball.rotation += ball.vx * 0.05;
+                trail.push({ x: ball.x, y: ball.y, life: 30 });
+
+                // Scored!
+                if (checkScore()) {
+                    ball.landed = true; ball.vx = 0; ball.vy = 0;
+                    gameMsg.textContent = '⚽ GOOOAAAAL!';
+                    gameMsg.classList.add('show');
+                    endGame(true);
+                }
+
+                // Out of bounds - missed this throw
+                if (ball.y > H+50 || ball.x < -50 || ball.x > W+50 || ball.y < -100) {
+                    ball.landed = true;
+                    if (triesLeft <= 0) {
+                        // No tries left - game over
+                        gameMsg.textContent = '😅 No goals left!';
+                        gameMsg.classList.add('show');
+                        endGame(false);
+                    } else {
+                        // Show miss reaction and reset ball
+                        resetting = true;
+                        var reaction = missReactions[MAX_TRIES - triesLeft - 1] || '😅 Try again!';
+                        gameMsg.textContent = reaction;
+                        gameMsg.classList.add('show');
+                        setTimeout(function() {
+                            gameMsg.classList.remove('show');
+                            resetBall();
+                        }, 1200);
+                    }
+                }
+            }
+            // Update trail
+            for (var i = trail.length - 1; i >= 0; i--) {
+                trail[i].life--;
+                if (trail[i].life <= 0) trail.splice(i, 1);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#f0e6c8'; ctx.fillRect(0, H-20, W, 20);
+            drawBin(); drawTrail(); drawAimLine(); drawBall(); drawUI();
+            if (!ball.launched && !dragging && !resetting) {
+                ctx.fillStyle = '#8a7a55'; ctx.font = '600 13px Quicksand'; ctx.textAlign = 'center';
+                ctx.fillText('👆 Drag the ball and release to throw!', W/2, H-30);
+            }
+        }
+
+        function loop() {
+            update(); draw();
+            animFrame = requestAnimationFrame(loop);
+        }
+        loop();
+    }
+    </script>
+</body>
+</html>
